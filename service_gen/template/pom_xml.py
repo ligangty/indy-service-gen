@@ -7,7 +7,7 @@ POM_TEMPLATE_CONTENT="""<?xml version="1.0"?>
     <version>2</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.commonjava.indy.service</groupId>
+  <groupId>{{ service.group_id }}</groupId>
   <artifactId>{{ service.artifact_id }}</artifactId>
   <version>1.0.0-SNAPSHOT</version>
   <name>{{ service.name|default(service.artifact_id) }}</name>
@@ -26,6 +26,13 @@ POM_TEMPLATE_CONTENT="""<?xml version="1.0"?>
     <apiVersion>1</apiVersion>
     <projectEmail>https://github.com/Commonjava/{{ service.repo_name }}</projectEmail>
 
+    {% if service.enable_event|default(true) %}
+    <eventmodel.version>1.0</eventmodel.version>
+    {%- endif %}
+    {%- if service.enable_security|default(true) %}
+    <indysecurity.verison>1.0</indysecurity.verison>
+    {%- endif %}
+    
     {%- if service.project_props %}
     <!-- project deps version properties -->
     {% for prop in service.project_props -%}

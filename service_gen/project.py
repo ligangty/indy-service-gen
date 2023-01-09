@@ -12,6 +12,7 @@ class IndyService(object):
     def __init__(self, project_dir: str, artifact_id: str, name=None,
                  desc=None, repo_name=None, enable_security=True,
                  enable_event=True, enable_tracing=True):
+        self.group_id="org.commonjava.indy.service"
         self.project_dir = project_dir
         self.artifact_id = artifact_id
         self.name = name
@@ -46,7 +47,7 @@ class IndyService(object):
     def gen_project(self):
         base_dir = os.path.join(self.project_dir, self.artifact_id)
         _write_to_file(base_dir, self.render_pom(), "pom.xml")
-        _make_java_directories(base_dir)
+        _make_java_directories(base_dir, pkgs=self.group_id.split("."))
         res_dir = os.path.join(base_dir, "src/main/resources")
         _write_to_file(res_dir, self.render_appconf(), "application.yaml")
         if self.enable_security:
@@ -63,7 +64,7 @@ def _write_to_file(base_dir:str, content:str, file_name:str):
         f.write(content)
     print("{file} created successfully.".format(file=file))
 
-def _make_java_directories(base_dir: str):
+def _make_java_directories(base_dir: str, pkgs=None):
     src_dir = os.path.join(base_dir, "src/main/java")
     if not os.path.exists(src_dir):
         os.makedirs(src_dir)
@@ -76,4 +77,12 @@ def _make_java_directories(base_dir: str):
     test_res_dir = os.path.join(base_dir, "src/test/resources")
     if not os.path.exists(test_res_dir):
         os.makedirs(test_res_dir)
+    if pkgs:
+        src_pkg_dirs = os.path.join(src_dir, *pkgs)
+        if not os.path.exists(src_pkg_dirs):
+            os.makedirs(src_pkg_dirs)
+        test_src_pkg_dirs = os.path.join(test_src_dir, *pkgs)
+        if not os.path.exists(test_src_pkg_dirs):
+            os.makedirs(test_src_pkg_dirs)
+        
         
