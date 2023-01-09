@@ -1,0 +1,18 @@
+.eggs
+*.egg-info
+venv
+dist
+build
+*.pyc
+.coverage
+coverage
+.tox
+.idea
+.vscode
+package/
+.local
+.DS_Store
+
+# Unit test
+__pytest_reports
+htmlcov
