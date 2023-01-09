@@ -59,9 +59,9 @@ setup(
     license="APLv2",
     packages=find_packages(exclude=["ez_setup", "examples", "tests"]),
     install_requires=_get_requirements('requirements.txt'),
-    package_data={'indy_service_gen': ['schemas/*.json']},
+    package_data={'service_gen': ['schemas/*.json']},
     test_suite="tests",
     entry_points={
-        "console_scripts": ["indy_service_gen = indy_service_gen.cli:run"],
+        "console_scripts": ["indy_service_gen = service_gen.cli:run"],
     },
 )

@@ -1,9 +1,7 @@
-import logging
 import locale
 import sys
+import os
 from .project import IndyService
-
-logger = logging.getLogger("indy_serv_gen")
 
 PROG="indy_service_gen"
 
@@ -12,7 +10,6 @@ class CLI(object):
         locale.setlocale(locale.LC_ALL, "")
         
     def run(self):
-        logging.captureWarnings(True)
         service_name=input("Please input your service name:")
         if not service_name:
             print("Service name can not be empty!")
@@ -41,31 +38,39 @@ class CLI(object):
         enable_tra = input("Enable opentelemetry tracing settings?[y]:")
         if enable_tra=="n" or enable_tra=="N":
             enable_tracing=False
+            
+        project_dir = _input_project_dir()
+        while not os.path.exists(project_dir):
+            print("The directory does not exist!")
+            project_dir = _input_project_dir()
         
-        service = IndyService(artifact_id=artifact_id, name=service_name,
-                              desc=service_desc, enable_security=enable_security,
-                              enable_event=enable_event, enable_tracing=enable_tracing)
-        print(service.render_pom())
-        print("\n\n\n")
-        print(service.render_appconf())
-
+        service = IndyService(project_dir=project_dir, artifact_id=artifact_id,
+                              name=service_name, desc=service_desc,
+                              enable_security=enable_security, enable_event=enable_event,
+                              enable_tracing=enable_tracing)
         
+        service.gen_project()
 
-
-def gen_project(args):
-    '''TODO: implement this method'''
-    pass
+def _input_project_dir() -> dir:
+    project_dir = input("Input your directory where your project will be generated:")
+    if not project_dir:
+        gen_ok_in = input("The project directory is not provided, will use current directory[{dir}] as default, is it ok?[Y]:".format(dir=os.getcwd()))
+        gen_ok_in = gen_ok_in.lower()
+        if not gen_ok_in:
+            gen_ok_in = "y"
+        while gen_ok_in not in ["y", "n", "yes", "no"]:
+            gen_ok_in = input("Input not correct. Please input yes or no (y or n) to continue:")
+            gen_ok_in = gen_ok_in.lower()
+        if gen_ok_in == "n":
+            print("Generation not allowed. Exit now")
+            sys.exit(0)
+        project_dir = os.getcwd()
+    
+    return project_dir
 
 def run():
     cli = CLI()
     cli.run()
-
-def exception_message(exc):
-    """
-    Take an exception and return an error message.
-    The message includes the type of the exception.
-    """
-    return '{exc.__class__.__name__}: {exc}'.format(exc=exc)
 
 if __name__ == "__main__":
     run()
