@@ -4,6 +4,9 @@ from .template.pom_xml import POM_TEMPLATE_CONTENT
 from .template.application_yaml import APPLICATION_YAML_TEMPLATE
 from .template.index_html import INDEX_HTML_TEMPLATE
 from .template.security_constraint import SECURITY_BINDING_YAML_TEMPLATE
+from .template.jenkins_file import JENKINSFILE_TEMPLATE
+from .template.readme import README_TEMPLATE
+from .template.gitignore import GIT_IGNORE_TEMPLATE
 
 class IndyService(object):
     """This IndyService will represent a simple model data content which will be
@@ -28,33 +31,23 @@ class IndyService(object):
         self.enable_event=enable_event
         self.enable_tracing=enable_tracing
         
-    def render_pom(self) -> str:
-        template = Template(POM_TEMPLATE_CONTENT)
-        return template.render(service=self)
-    
-    def render_appconf(self) -> str:
-        template = Template(APPLICATION_YAML_TEMPLATE)
-        return template.render(service=self)
-    
-    def render_index_html(self) -> str:
-        template = Template(INDEX_HTML_TEMPLATE)
-        return template.render(service=self)
-    
-    def render_sec_constraint(self) -> str:
-        template = Template(SECURITY_BINDING_YAML_TEMPLATE)
+    def _render_file(self, template_content: str) -> str:
+        template = Template(template_content)
         return template.render(service=self)
     
     def gen_project(self):
         base_dir = os.path.join(self.project_dir, self.artifact_id)
-        _write_to_file(base_dir, self.render_pom(), "pom.xml")
+        _write_to_file(base_dir, self._render_file(POM_TEMPLATE_CONTENT), "pom.xml")
+        _write_to_file(base_dir, self._render_file(JENKINSFILE_TEMPLATE), "Jenkinsfile")
+        _write_to_file(base_dir, self._render_file(README_TEMPLATE), "README.md")
+        _write_to_file(base_dir, self._render_file(GIT_IGNORE_TEMPLATE), ".gitignore")
         _make_java_directories(base_dir, pkgs=self.group_id.split("."))
         res_dir = os.path.join(base_dir, "src/main/resources")
-        _write_to_file(res_dir, self.render_appconf(), "application.yaml")
+        _write_to_file(res_dir, self._render_file(APPLICATION_YAML_TEMPLATE), "application.yaml")
         if self.enable_security:
-            _write_to_file(res_dir, self.render_sec_constraint(), "security-bindings.yaml")
+            _write_to_file(res_dir, self._render_file(SECURITY_BINDING_YAML_TEMPLATE), "security-bindings.yaml")
         meta_inf_res_dir = os.path.join(res_dir, "META-INF", "resources")
-        _write_to_file(meta_inf_res_dir, self.render_index_html(), "index.html")
-        
+        _write_to_file(meta_inf_res_dir, self._render_file(INDEX_HTML_TEMPLATE), "index.html")
         
 def _write_to_file(base_dir:str, content:str, file_name:str):
     if not os.path.exists(base_dir):
