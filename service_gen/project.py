@@ -7,6 +7,8 @@ from .template.security_constraint import SECURITY_BINDING_YAML_TEMPLATE
 from .template.jenkins_file import JENKINSFILE_TEMPLATE
 from .template.readme import README_TEMPLATE
 from .template.gitignore import GIT_IGNORE_TEMPLATE
+from .template.code_of_conduct import CODE_OF_CONDUCT_TEMPLATE
+from .template.license import LICENSE_TEMPLATE
 
 class IndyService(object):
     """This IndyService will represent a simple model data content which will be
@@ -41,6 +43,8 @@ class IndyService(object):
         _write_to_file(base_dir, self._render_file(JENKINSFILE_TEMPLATE), "Jenkinsfile")
         _write_to_file(base_dir, self._render_file(README_TEMPLATE), "README.md")
         _write_to_file(base_dir, self._render_file(GIT_IGNORE_TEMPLATE), ".gitignore")
+        _write_to_file(base_dir, self._render_file(CODE_OF_CONDUCT_TEMPLATE), "CODE_OF_CONDUCT.md")
+        _write_to_file(base_dir, self._render_file(LICENSE_TEMPLATE), "LICENSE")
         _make_java_directories(base_dir, pkgs=self.group_id.split("."))
         res_dir = os.path.join(base_dir, "src/main/resources")
         _write_to_file(res_dir, self._render_file(APPLICATION_YAML_TEMPLATE), "application.yaml")
